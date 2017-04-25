@@ -1,0 +1,28 @@
+{
+  "name": "nw-notifications",
+  "version": "0.1.0",
+  "description": "A node module for sending notifications in nw applications.",
+  "main": "index.js",
+  "scripts": {
+    "test": "nw test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Casstime/nw-notifications.git"
+  },
+  "keywords": [
+    "nw",
+    "nwjs",
+    "notify",
+    "notification"
+  ],
+  "author": "pansinm <pansinm@foxmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Casstime/nw-notifications/issues"
+  },
+  "homepage": "https://github.com/Casstime/nw-notifications#readme",
+  "dependencies": {
+    "uuid": "^3.0.1"
+  }
+}

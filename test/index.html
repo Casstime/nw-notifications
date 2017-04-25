@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Hello World!</title>
+</head>
+<body>
+<h1>Hello World!</h1>
+We are using node.js
+<script>document.write(process.version)</script>
+
+<script type="text/javascript">
+  const Notifications = require('../index');
+  for(let i = 0; i < 10; i++) {
+    const notification = Notifications.create({
+      iconUrl: 'https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_120x44dp.png',
+      title: 'this is title' + i,
+      message: 'this is message body'  + i
+    });
+
+    notification.on('clicked', () => {
+        console.log('======= clicked =======');
+       notification.close();
+    });
+
+    notification.on('shown', () => {
+      console.log('=========== shown ===============');
+    });
+
+    notification.on('closed', (reason) => {
+        console.log('========= closed =========', reason);
+    });
+
+    notification.on('error', (error) => {
+        console.log('=========== error ===========', error);
+    })
+  }
+</script>
+</body>
+</html>
