@@ -8,7 +8,7 @@ npm install nw-notifications
 
 ### Usage
 
-#### notify
+#### create
 
 ```javascript
 var Notifications = require('nw-notifications');
