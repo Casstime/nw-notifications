@@ -1,6 +1,6 @@
 {
   "name": "nw-notifications",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A node module for sending notifications in nw applications.",
   "main": "index.js",
   "scripts": {
