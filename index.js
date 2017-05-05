@@ -133,7 +133,5 @@ chrome.notifications.onClicked.addListener(function (notificationId) {
   notification.emit('clicked');
 });
 
-module.exports = {
-  setConfig,
-  create
-};
+module.exports.setConfig = setConfig;
+module.exports.create = create;
