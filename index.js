@@ -109,8 +109,10 @@ function display() {
   }
 
   var notificationId = queue.shift();
-  var notification = notifications[notificationId];
-  notification.show();
+  if (notificationId) {
+    var notification = notifications[notificationId];
+    notification.show();
+  }
 }
 
 chrome.notifications.onClosed.addListener(function (notificationId, byUser) {
