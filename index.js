@@ -16,9 +16,9 @@ var State = {
 };
 
 var ClosedReason = {
-  TIMEOUT: '达到设置时间自动关闭',
-  CLOSED_BY_USER: '点击关闭按钮关闭',
-  CLOSED_BY_FUNC: '点击消息弹窗查看消息详情时弹窗关闭'
+  TIMEOUT: 'TIMEOUT',
+  CLOSED_BY_USER: 'CLOSED_BY_USER',
+  CLOSED_BY_FUNC: 'CLOSED_BY_FUNC'
 };
 
 var ALL_DISPLAY_PROPS = ['type', 'iconUrl', 'appIconMaskUrl', 'title', 'message', 'contextMessage', 'priority',
@@ -109,8 +109,10 @@ function display() {
   }
 
   var notificationId = queue.shift();
-  var notification = notifications[notificationId];
-  notification.show();
+  if (notificationId) {
+    var notification = notifications[notificationId];
+    notification.show();
+  }
 }
 
 chrome.notifications.onClosed.addListener(function (notificationId, byUser) {
