@@ -21,8 +21,8 @@ var ClosedReason = {
   CLOSED_BY_FUNC: 'CLOSED_BY_FUNC'
 };
 
-var ALL_DISPLAY_PROPS = ['type', 'iconUrl', 'appIconMaskUrl', 'title', 'message', 'contextMessage', 'priority',
-  'eventTime', 'imageUrl', 'items', 'progress', 'isClickable', 'requireInteraction'];
+var ALL_DISPLAY_PROPS = ['type', 'iconUrl', 'title', 'message', 'contextMessage', 'priority',
+  'eventTime', 'items', 'progress', 'isClickable', 'requireInteraction'];
 
 function Notification(id, options) {
   EventEmitter.call(this);
