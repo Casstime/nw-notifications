@@ -23,8 +23,8 @@ We are using node.js
        notification.close();
     });
 
-    notification.on('shown', () => {
-      console.log('=========== shown ===============');
+    notification.on('shown', (id) => {
+      console.log('=========== shown ===============', id);
     });
 
     notification.on('closed', (reason) => {

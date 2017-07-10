@@ -7,7 +7,9 @@ var DISPLAY_TIME = 10 * 1000;
 var queue = [];
 var defaultOptions = {};
 var notifications = {};
-var count = 0;
+var logger = console;
+var displaying = false;
+var remainCount = 0;
 
 var State = {
   CREATED: 'CREATED',
@@ -36,12 +38,11 @@ Notification.prototype.close = function () {
     this.state = State.CLOSED;
     this.closedReason = ClosedReason.CLOSED_BY_FUNC;
   }
+
   chrome.notifications.clear(this.id);
 };
 
-Notification.prototype.show = function () {
-  count++;
-
+Notification.prototype.show = function (beforeCount) {
   var that = this;
 
   var displayOptions = {};
@@ -55,17 +56,17 @@ Notification.prototype.show = function () {
       displayOptions[prop] = that.options[prop];
     });
 
-  var finalDisplayOptions = Object.assign({ requireInteraction: true, type: 'basic' }, defaultOptions, displayOptions);
+  var finalDisplayOptions = Object.assign({
+    requireInteraction: true,
+    type: 'basic'
+  }, defaultOptions, displayOptions);
 
-  try {
-    chrome.notifications.create(that.id, finalDisplayOptions, function (id) {
-
+  return createNotification(that.id, finalDisplayOptions)
+    .then(function () {
       var displayTime = that.options.displayTime || DISPLAY_TIME;
 
-      that.state = State.SHOWN;
-
       // 指定时间关闭窗口
-      setTimeout(function() {
+      setTimeout(function () {
         if (that.state !== State.CLOSED) {
           that.state = State.CLOSED;
           that.closedReason = ClosedReason.TIMEOUT;
@@ -73,12 +74,15 @@ Notification.prototype.show = function () {
         }
       }, displayTime);
 
-      that.emit('shown', id);
+      return getDisplayCount();
+    })
+    .then(function (realCount) {
+      if (realCount === remainCount + 1) {
+        return;
+      }
+
+      throw new Error('Create Notification Error!');
     });
-  } catch (e) {
-    count--;
-    this.emit('error', e);
-  }
 };
 
 // 继承事件
@@ -86,8 +90,10 @@ util.inherits(Notification, EventEmitter);
 
 function setConfig(options) {
   defaultOptions = Object.assign({}, options.displayOptions);
-  MAX_COUNT = options.maxCount ||  3;
-  DISPLAY_TIME = options.displayTime;
+  MAX_COUNT = options.maxCount || MAX_COUNT;
+  MAX_COUNT = MAX_COUNT > 3 ? 3 : MAX_COUNT;
+  DISPLAY_TIME = options.displayTime || DISPLAY_TIME;
+  logger = options.logger || logger;
 }
 
 function create(options) {
@@ -103,20 +109,65 @@ function create(options) {
   return notification;
 }
 
+function getDisplayCount() {
+  return new Promise(function (resolve, reject) {
+    chrome.notifications.getAll(function (currentNotifications) {
+      const realCount = Object.keys(currentNotifications).length;
+      resolve(realCount);
+    });
+  });
+}
+
+function createNotification(id, options) {
+  return new Promise(function (resolve, reject) {
+    chrome.notifications.create(id, options, function (id) {
+      resolve(id);
+    });
+  });
+}
+
 function display() {
-  if (count >= MAX_COUNT) {
+  if (displaying) {
     return;
   }
 
-  var notificationId = queue.shift();
-  if (notificationId) {
-    var notification = notifications[notificationId];
-    notification.show();
-  }
+  displaying = true;
+  getDisplayCount()
+    .then(function (count) {
+      // sync notification count;
+      remainCount = count;
+      if (count >= MAX_COUNT) {
+        return;
+      }
+
+      var notificationId = queue.shift();
+      if (!notificationId) {
+        return;
+      }
+
+      var notification = notifications[notificationId];
+      if (!notification) {
+        return;
+      }
+
+      return notification.show()
+        .then(function (id) {
+          notification.emit('shown', id);
+        })
+        .catch(function () {
+          delete notifications[notificationId];
+          notification.emit('error', new Error('Create Notification failed', notification.options));
+        })
+    })
+    .then(function () {
+      // display next
+      displaying = false;
+      display();
+    });
 }
 
 chrome.notifications.onClosed.addListener(function (notificationId, byUser) {
-  count--;
+  remainCount--;
 
   var notification = notifications[notificationId];
   notification.state = State.CLOSED;
@@ -126,6 +177,8 @@ chrome.notifications.onClosed.addListener(function (notificationId, byUser) {
   }
 
   notification.emit('closed', notification.closedReason);
+
+  delete notifications[notificationId];
 
   display();
 });
