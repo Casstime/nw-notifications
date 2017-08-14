@@ -15,7 +15,8 @@ We are using node.js
     const notification = Notifications.create({
       iconUrl: 'https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_120x44dp.png',
       title: 'this is title' + i,
-      message: 'this is message body'  + i
+      message: 'this is message body'  + i,
+      displayTime: 15000
     });
 
     notification.on('clicked', () => {
