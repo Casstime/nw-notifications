@@ -8,7 +8,9 @@ npm install nw-notifications
 
 ### Usage
 
-#### create
+#### Notifications.create(options)
+
+More displayOptions see [NotificationOptions](https://developer.chrome.com/extensions/notifications#type-NotificationOptions)
 
 ```javascript
 var Notifications = require('nw-notifications');
@@ -19,20 +21,24 @@ var notification = Notifications.create({
 });
 ```
 
-#### setConfig
+#### Notifications.setDefaultOptions(options)
 
-More displayOptions see [NotificationOptions](https://developer.chrome.com/extensions/notifications#type-NotificationOptions)
 
 ```javascript
-Notifications.setConfig({
-  displayTime: 10 * 1000, // ms
-  displayOptions: {
-    iconUrl: 'icon.png'
-  }
+Notifications.setDefaultOptions({
+  iconUrl: 'icon.png'
 });
 ```
 
-### event
+#### Notifications.setDisplayTime(delay)
+```javascript
+Notification.setDisplayTime(20000); // notification will closed 20s later;
+```
+
+### Notifications.setLogger(logger)
+Default logger is console
+
+### events
 
 ```
 notification.on('shown', function () {
@@ -45,15 +51,10 @@ notification.on('clicked', function () {
 
 notification.on('closed', function (reason) {
   console.log(reason); 
-  // CLOSED_BY_USER  click close button
-  // TIMEOUT         displayTime timeout
-  // CLOSED_BY_FUNC  invoke notificaiton.close function
+  // CLOSED_BY_USER
+  // CLOSED_BY_TIMEOUT
+  // CLOSED_BY_CLICK
 });
 
 ```
 
-### method
-
-```
-notification.close(); // close current notification
-```
