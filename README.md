@@ -38,6 +38,9 @@ Notification.setDisplayTime(20000); // notification will closed 20s later;
 ### Notifications.setLogger(logger)
 Default logger is console
 
+### Notifications.clear()
+Clear all notifications 
+
 ### events
 
 ```
